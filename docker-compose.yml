@@ -1,0 +1,23 @@
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"  # Nginxはホストの8080でアクセス可能
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Nginxの設定ファイルをマウント
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./flask  # FlaskのDockerfileが存在するディレクトリ
+    ports:
+      - "5001:5000"  # Flaskのポートマッピング 本体：コンテナ
+    volumes:
+      - ./flask:/app
+    working_dir: /app
+    environment:
+      FLASK_ENV: development  # Flaskのデバッグモードを有効化
+      DEBUG: true
+    command: flask run --host=0.0.0.0 --port=5000  # Flaskアプリを起動
